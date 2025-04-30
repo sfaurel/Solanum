@@ -1,5 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import {
+	SignedIn,
+	SignedOut,
+	UserButton,
+	SignInButton
+} from "@clerk/astro/components";
+
 ---
 
 <Layout>
@@ -10,15 +17,15 @@ import Layout from '../layouts/Layout.astro';
             <p class="mt-6 text-lg text-gray-400">
                 A productivity tool that combines the Pomodoro technique with Notion, helping you stay focused and organized.
             </p>
-
-            <div class="mt-10">
-                <a 
-                    href="/app"
-                    class="inline-block font-medium px-8 py-3 border-2 rounded-full"
-                >
-                    Get Started
-                </a>
-            </div>
+			<SignedOut>
+				<div class="mt-10">
+					<SignInButton mode="modal"
+						class="inline-block font-medium px-8 py-3 border-2 rounded-full"
+					>
+						Get Started
+					</SignInButton>
+				</div>
+			</SignedOut>
         </div>
     </main>
 </Layout>
