@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+    <div class="min-h-screen flex">
+        <!-- Projects Sidebar -->
+        <aside class="w-[80px] bg-midnight-900 p-4 flex flex-col items-center gap-4 shrink-0">
+            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer"></div>
+            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer"></div>
+            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer"></div>
+            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer flex items-center justify-center">
+                <span class="text-2xl font-medium text-midnight-900  bg-[#fff] rounded-full">+</span>
+            </div>
+        </aside>
+
+        <!-- Trackers Panel with Resize Handle -->
+        <aside class="flex-1 md:w-[250px] md:min-w-[200px] md:max-w-[400px] bg-midnight-800 flex flex-col shrink-0 relative group">
+            <div class="flex-1 p-4">
+                <h2 class="text-sm font-semibold text-midnight-400 mb-4">TRACKERS</h2>
+                <div class="space-y-2">
+                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">Tracker 1</div>
+                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">Tracker 2</div>
+                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">Tracker 3</div>
+                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">
+                        <span class="text-2xl font-medium text-midnight-900 bg-[#fff] rounded-full h-auto">+</span> New Tracker
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Tracker -->
+            <div class="p-4 border-t border-midnight-700">
+                <div class="p-4 bg-midnight-700 rounded-lg flex items-center gap-3 ">
+                    <div class="rounded-full bg-midnight-600 hover:bg-midnight-400 w-15 h-15 cursor-pointer"></div>
+                    <h3 class="font-medium">Current Tracker</h3>
+                    <p class="font-extrabold text-3xl text-midnight-400 ml-3">25:00</p>
+                </div>
+            </div>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-midnight-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-midnight-600 rounded-full"></div>
+                    <div>
+                        <div class="font-medium">User Name</div>
+                        <div class="text-sm text-midnight-400">user@email.com</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="hidden md:block flex-1 bg-midnight-800 p-6">
+            <div class="bg-midnight-700 rounded-lg p-6 h-full">
+                <h1 class="text-xl font-bold mb-4">Selected Task details</h1>
+                <p class="text-midnight-400">Task details and content will go here...</p>
+            </div>
+        </main>
+    </div>
+</Layout>
+

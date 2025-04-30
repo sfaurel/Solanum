@@ -1,11 +1,24 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Welcome />
+    <main class="min-h-screen flex items-center justify-center">
+        <div class="max-w-xl mx-auto px-4 py-16 text-center">
+            <h1 class="text-4xl font-bold tracking-tight">SOLANUM</h1>
+            
+            <p class="mt-6 text-lg text-gray-400">
+                A productivity tool that combines the Pomodoro technique with Notion, helping you stay focused and organized.
+            </p>
+
+            <div class="mt-10">
+                <a 
+                    href="/app"
+                    class="inline-block font-medium px-8 py-3 border-2 rounded-full"
+                >
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </main>
 </Layout>

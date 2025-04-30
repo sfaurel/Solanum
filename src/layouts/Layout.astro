@@ -5,16 +5,36 @@
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>Solanum</title>
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
 
+<style is:global>
+	@import "tailwindcss";
+	@theme {
+		--color-*: initial;
+		--color-midnight-900: #0d1318;
+		--color-midnight-800: #12181e;
+		--color-midnight-700: #1a1f25;
+		--color-midnight-600: #2c333a;
+		--color-midnight-500: #374151;
+		--color-midnight-400: #4b5563;
+		--color-midnight-300: #6b7280;
+		--color-midnight-200: #9ca3af;
+		--color-midnight-100: #d1d5db;
+	}
+</style>
+
+
 <style>
 	html,
 	body {
+		background: #0d1318;
+		color: white;
+		color-scheme: light dark;
 		margin: 0;
 		width: 100%;
 		height: 100%;
