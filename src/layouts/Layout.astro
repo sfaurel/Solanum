@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -7,31 +7,31 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Solanum</title>
 	</head>
-	<body>
+	<body class="bg-white dark:bg-midnight-900">
 		<slot />
 	</body>
 </html>
 
 <style is:global>
 	@import "tailwindcss";
+	@custom-variant dark (&:where(.dark, .dark *));
 	@theme {
 		--color-midnight-900: #0d1318;
-		--color-midnight-800: #12181e;
-		--color-midnight-700: #1a1f25;
-		--color-midnight-600: #2c333a;
-		--color-midnight-500: #374151;
-		--color-midnight-400: #4b5563;
-		--color-midnight-300: #6b7280;
-		--color-midnight-200: #9ca3af;
-		--color-midnight-100: #d1d5db;
+		--color-midnight-800: #162129;
+		--color-midnight-700: #293945;
+		--color-midnight-600: #374454;
+		--color-midnight-500: #475463;
+		--color-midnight-400: #5c6875;
+		--color-midnight-300: #7b8491;
+		--color-midnight-200: #a1a8ad;
+		--color-midnight-100: #ccd1d4;
+		--color-midnight-50:  #e8ebed;
 	}
 </style>
-
 
 <style>
 	html,
 	body {
-		background: #0d1318;
 		color: white;
 		color-scheme: light dark;
 		margin: 0;
@@ -39,3 +39,5 @@
 		height: 100%;
 	}
 </style>
+
+

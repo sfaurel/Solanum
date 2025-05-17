@@ -1,64 +1,267 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import {
-	UserButton,
-} from "@clerk/astro/components";
+import Layout from "../layouts/Layout.astro";
+import { UserButton } from "@clerk/astro/components";
+import Dropdown from "../components/Dropdown.astro";
+import Pomodoro from "../components/Pomodoro.jsx";
 
 const user = await Astro.locals.currentUser();
-if (!user) return new Response('Unauthorized', { status: 401 });
+if (!user) return new Response("Unauthorized", { status: 401 });
 
+const data = [
+    {
+        name: "Backlog",
+        tasks: ["Task 1", "Task 2"],
+    },
+    {
+        name: "To Do",
+        tasks: ["Task 3"],
+    },
+    {
+        name: "In development",
+        tasks: ["Task 4", "Task 5"],
+    },
+    {
+        name: "Testing",
+        tasks: ["Task 6", "Task 7"],
+    },
+    {
+        name: "Reviewing",
+        tasks: ["Task 8"],
+    },
+    {
+        name: "Done",
+        tasks: ["Task 9", "Task 10"],
+    },
+];
+
+const statusOptions = [
+    {
+        name: "Backlog",
+        color: "bg-yellow-800",
+        dotColor: "bg-yellow-700",
+        group: "Not started",
+    },
+    {
+        name: "To Do",
+        color: "bg-gray-500",
+        dotColor: "bg-gray-400",
+        group: "Not started",
+    },
+    {
+        name: "In development",
+        color: "bg-blue-500",
+        dotColor: "bg-blue-400",
+        group: "In progress",
+    },
+    {
+        name: "Testing",
+        color: "bg-pink-500",
+        dotColor: "bg-pink-400",
+        group: "In progress",
+    },
+    {
+        name: "Reviewing",
+        color: "bg-purple-500",
+        dotColor: "bg-purple-400",
+        group: "In progress",
+    },
+    {
+        name: "Done",
+        color: "bg-green-500",
+        dotColor: "bg-green-300",
+        group: "Complete",
+    },
+];
 ---
 
 <Layout>
-    <div class="min-h-screen flex">
-        <!-- Projects Sidebar -->
-        <aside class="w-[80px] bg-midnight-900 p-4 flex flex-col items-center gap-4 shrink-0">
-            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer"></div>
-            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer"></div>
-            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer"></div>
-            <div class="w-10 h-10 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer flex items-center justify-center">
-                <span class="text-2xl font-medium text-midnight-900  bg-[#fff] rounded-full">+</span>
-            </div>
-        </aside>
-
-        <!-- Trackers Panel with Resize Handle -->
-        <aside class="flex-1 md:w-[250px] md:min-w-[200px] md:max-w-[400px] bg-midnight-800 flex flex-col shrink-0 relative group">
-            <div class="flex-1 p-4">
-                <h2 class="text-sm font-semibold text-midnight-400 mb-4">TRACKERS</h2>
-                <div class="space-y-2">
-                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">Tracker 1</div>
-                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">Tracker 2</div>
-                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">Tracker 3</div>
-                    <div class="p-3 bg-midnight-700 rounded-lg hover:bg-midnight-600 cursor-pointer">
-                        <span class="text-2xl font-medium text-midnight-900 bg-[#fff] rounded-full h-auto">+</span> New Tracker
+    <nav
+        class="fixed top-0 z-50 w-full bg-white border-b border-midnight-200 dark:bg-midnight-800 dark:border-midnight-700"
+    >
+        <div class="px-3 py-3 lg:px-5 lg:pl-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center justify-start rtl:justify-end">
+                    <a href="/" class="flex ms-2 md:me-24">
+                        <img
+                            src="logo.svg"
+                            class="h-8 me-3 aspect-square"
+                            alt="Solanum Logo"
+                        />
+                        <span
+                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-emerald-500"
+                            >Solanum</span
+                        >
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex items-center ms-3">
+                        <UserButton />
                     </div>
                 </div>
             </div>
+        </div>
+    </nav>
 
-            <!-- Selected Tracker -->
-            <div class="p-4 border-t border-midnight-700">
-                <div class="p-4 bg-midnight-700 rounded-lg flex items-center gap-3 ">
-                    <div class="rounded-full bg-midnight-600 hover:bg-midnight-400 w-15 h-15 cursor-pointer"></div>
-                    <h3 class="font-medium">Current Tracker</h3>
-                    <p class="font-extrabold text-3xl text-midnight-400 ml-3">25:00</p>
-                </div>
-            </div>
-
-            <!-- User Profile -->
-            <div class="p-4 border-t border-midnight-700">
-                <UserButton
-                    showName
+    <aside
+        id="logo-sidebar"
+        class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-midnight-200 sm:translate-x-0 dark:bg-midnight-800 dark:border-midnight-700"
+        aria-label="Sidebar"
+    >
+        <div
+            class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-midnight-800"
+        >
+            <ul class="space-y-2 font-medium">
+                {
+                    data.map((column) => (
+                        <li>
+                            <details class="group">
+                                <summary class="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700">
+                                    <span class="flex items-center space-x-2">
+                                        <svg
+                                            class="w-4 h-4 text-midnight-400 group-open:rotate-90 transition-transform"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 5l7 7-7 7"
+                                            />
+                                        </svg>
+                                        <span>{column.name}</span>
+                                    </span>
+                                    <button class="text-sm text-midnight-600 dark:text-midnight-200 hover:underline">
+                                        ⋮
+                                    </button>
+                                </summary>
+                                <ul class="pl-6 mt-2 space-y-1">
+                                    {column.tasks.map((task, index) => (
+                                        <li>
+                                            <a
+                                                href="#"
+                                                class="flex items-center p-2 rounded-lg text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700"
+                                            >
+                                                {task}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </details>
+                        </li>
+                    ))
+                }
+            </ul>
+        </div>
+    </aside>
+    <!-- main panel -->
+    <div class="hidden sm:block pt-6 sm:ml-64 mt-14 px-24">
+        <!-- Timer -->
+        <Pomodoro client:load />
+        <form class="pt-8">
+            <h2 class="text-white mb-5 text-2xl font-bold">New Task</h2>
+            <div class="flex gap-2 mb-5 items-center">
+                <label                                                                                                                                                                                                                                      
+                    for="task name"
+                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Task Name</label
+                >
+                <input
+                    type="text"
+                    id="task name"
+                    class="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Task Name"
+                    required
                 />
             </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="hidden md:block flex-1 bg-midnight-800 p-6">
-            <div class="bg-midnight-700 rounded-lg p-6 h-full">
-                <h1 class="text-xl font-bold mb-4">Selected Task details</h1>
-                <p class="text-midnight-400">Task details and content will go here...</p>
+            <div class="flex gap-2 mb-5 items-center">
+                <label
+                    for="status"
+                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Status</label
+                >
+                <Dropdown key="1" options={statusOptions} placeholder="Select status"/>
             </div>
-        </main>
+            <div class="flex gap-2 mb-5 items-center">
+                <label
+                    for="priority"
+                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Priority</label
+                >
+                <Dropdown key="2" options={statusOptions} placeholder="Select priority"/>
+            </div>
+            <div class="flex gap-2 mb-5 items-center">
+                <label
+                    for="assign"
+                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Assign</label
+                >
+                <Dropdown key="3" options={statusOptions} placeholder="Select assignee"/>
+            </div>
+            <div class="flex gap-2 mb-5 items-center">
+                <label
+                    for="category"
+                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Category</label
+                >
+                <Dropdown key="4" options={statusOptions} placeholder="Select category"/>
+            </div>
+            <div class="flex gap-2 mb-5 items-center">
+                <label
+                    for="start date"
+                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Start Date</label
+                >
+                <input
+                    type="date"
+                    id="start date"
+                    class="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                />
+            </div>
+            <div class="flex gap-2 mb-5 items-center">
+                <label
+                    for="deadline"
+                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Deadline</label
+                >
+                <input
+                    type="date"
+                    id="deadline"
+                    class="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                />
+            </div>
+            <div class="flex flex-col gap-2 mb-5">
+                <label
+                    for="description"
+                    class="block text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Description</label
+                >
+                <textarea
+                    id="description"
+                    rows="4"
+                    class="block p-2.5 w-full text-sm text-midnight-900 bg-midnight-50 rounded-lg border border-midnight-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Task description..."></textarea>
+            </div>
+            <div class="flex flex-col gap-2 mb-5">
+                <label
+                    for="comment"
+                    class="block text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
+                    >Comments</label
+                >
+                <textarea
+                    id="comment"
+                    rows="4"
+                    class="block p-2.5 w-full text-sm text-midnight-900 bg-midnight-50 rounded-lg border border-midnight-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Write a comment..."></textarea>
+            </div>
+            <button
+                type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >Submit</button
+            >
+        </form>
     </div>
 </Layout>
-

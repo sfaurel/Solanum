@@ -1,0 +1,121 @@
+---
+export interface Option {
+  name: string;
+  color: string;
+  dotColor: string;
+  group?: string;
+}
+
+export interface Props {
+  options: Option[];
+  key: string;
+  selected?: string;
+  placeholder?: string;
+}
+
+const { key, options, selected = "", placeholder = "Select" } = Astro.props;
+
+const grouped = options.some(opt => opt.group);
+const groups = grouped
+  ? [...new Set(options.map(opt => opt.group).filter(Boolean))]
+  : [];
+---
+
+<div id={`dropdown-${key}`} class="statusDropdown relative w-72 text-sm font-medium">
+  <button
+    class="dropdownToggle flex justify-between items-center w-full rounded-t-md rounded-b-md  border bg-midnight-300 border-midnight-400 dark:bg-midnight-700 dark:border-midnight-600 px-3 py-2 cursor-pointer"
+  >
+    <div
+      class="selectedColor flex items-center px-2 py-0.5 gap-1.5 rounded-full"
+    >
+      <div class="selectedDot hidden w-2 h-2 rounded-full"></div>
+      <span class="selectedText text-black dark:text-white">{selected || placeholder}</span>
+    </div>
+    <svg/
+      class="w-4 h-4 text-midnight-600 dark:text-midnight-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 9l-7 7-7-7"
+      ></path>
+    </svg>
+  </button>
+
+  <div
+    class="dropdownMenu hidden absolute z-10 w-full rounded-b-md border border-t-0 border-midnight-400 bg-midnight-200 dark:border-midnight-600 dark:bg-midnight-800 shadow-lg overflow-hidden"
+  >
+    {
+      grouped
+        ? groups.map(group => (
+            <div>
+              <div class="px-3 py-2 text-xs text-midnight-700 dark:text-midnight-300 uppercase tracking-wide border-t border-midnight-400 dark:border-midnight-600">{group}</div>
+              {
+                options.filter(opt => opt.group === group).map(opt => (
+                  <button
+                    class="flex items-center w-full px-3 py-2 text-left hover:bg-midnight-300 hover:dark:bg-midnight-700 option"
+                    data-name={opt.name}
+                    data-color={opt.color}
+                    data-dot-color={opt.dotColor}
+                  >
+                    <div class={`flex items-center px-2 py-0.5 gap-1.5 rounded-full ${opt.color}`}>
+                      <div class={`w-2 h-2 rounded-full ${opt.dotColor}`}></div>
+                      <span class="text-white"> {opt.name} </span>
+                    </div>
+                  </button>
+                ))
+              }
+            </div>
+          ))
+        : options.map(opt => (
+            <button
+              class="flex items-center w-full px-3 py-2 text-left hover:bg-midnight-300 hover:dark:bg-midnight-700 option"
+              data-name={opt.name}
+              data-color={opt.color}
+              data-dot-color={opt.dotColor}
+            >
+                <div class={`flex items-center px-2 py-0.5 gap-1.5 rounded-full ${opt.color}`}>
+                  <div class={`w-2 h-2 rounded-full ${opt.dotColor}`}></div>
+                  <span class="text-white"> {opt.name} </span>
+                </div>
+            </button>
+        ))
+    }
+  </div>
+</div>
+
+<script define:vars={{ key }}>
+  const dropdown = document.querySelector(`#status-dropdown-${key}`);
+  const toggle = dropdown.querySelector(".dropdownToggle");
+  const menu = dropdown.querySelector(".dropdownMenu");
+  const selectedText = dropdown.querySelector(".selectedText");
+  const selectedDot = dropdown.querySelector(".selectedDot");
+  const selectedColor = dropdown.querySelector(".selectedColor");
+  const dropdownToggle = dropdown.querySelector(".dropdownToggle");
+
+  toggle.addEventListener("click", () => {
+    menu.classList.toggle("hidden");
+    dropdownToggle.classList.toggle("rounded-b-md");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target)) {
+      menu.classList.add("hidden");
+      dropdownToggle.classList.add("rounded-b-md");
+    }
+  });
+
+  dropdown.querySelectorAll(".option").forEach((option) => {
+    option.addEventListener("click", () => {
+      selectedText.textContent = option.dataset.name;
+      selectedColor.className = `flex items-center px-2 py-0.5 gap-1.5 rounded-full ${option.dataset.color}`;
+      selectedDot.className = `w-2 h-2 rounded-full ${option.dataset.dotColor}`;
+      menu.classList.add("hidden");
+      dropdownToggle.classList.add("rounded-b-md");
+    });
+  });
+</script>
