@@ -1,12 +1,10 @@
-// src/pages/board/[boardId]/task/[taskId]/añadir_bloque_trabajo.ts
-import { Client } from '@notionhq/client';
-const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
+import { withAuth } from "@lib/auth";
+import { getNotionClientForUser } from '@lib/notion';
 
-
-export async function POST({ params, request }) {
-    const boardId = params.boardId!;
-    const taskId = params.taskId!;
-    const { duration, user } = await request.json();
+export const POST = withAuth(async (userId, context) => {
+    const boardId = context.params.boardId!;
+    const taskId = context.params.taskId!;
+    const { duration, user } = await context.request.json();
 
     if (!duration || !user) {
         return new Response(JSON.stringify({ error: "Missing Data" }), {
@@ -14,7 +12,7 @@ export async function POST({ params, request }) {
             headers: { 'Content-Type': 'application/json' }
         });
     }
-
+    const notion = await getNotionClientForUser(userId, context);
     const task = await notion.pages.retrieve({ page_id: taskId });
 
     const properties = task.properties;
@@ -84,4 +82,4 @@ export async function POST({ params, request }) {
             headers: { "Content-Type": "application/json" }
         }
     );
-};
+});
