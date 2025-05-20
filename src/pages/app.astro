@@ -1,77 +1,34 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "@layouts/Layout.astro";
 import { UserButton } from "@clerk/astro/components";
-import Dropdown from "../components/Dropdown.astro";
-import Pomodoro from "../components/Pomodoro.jsx";
+import TaskForm from "@components/TaskForm.tsx";
+import Pomodoro from "@components/Pomodoro.tsx";
+import ProjectSwitcher from "@components/ProjectSwitcher.astro";
 
 const user = await Astro.locals.currentUser();
 if (!user) return new Response("Unauthorized", { status: 401 });
 
-const data = [
-    {
-        name: "Backlog",
-        tasks: ["Task 1", "Task 2"],
-    },
-    {
-        name: "To Do",
-        tasks: ["Task 3"],
-    },
-    {
-        name: "In development",
-        tasks: ["Task 4", "Task 5"],
-    },
-    {
-        name: "Testing",
-        tasks: ["Task 6", "Task 7"],
-    },
-    {
-        name: "Reviewing",
-        tasks: ["Task 8"],
-    },
-    {
-        name: "Done",
-        tasks: ["Task 9", "Task 10"],
-    },
-];
+const boardId = import.meta.env.NOTION_DATABASE_ID;
 
-const statusOptions = [
-    {
-        name: "Backlog",
-        color: "bg-yellow-800",
-        dotColor: "bg-yellow-700",
-        group: "Not started",
-    },
-    {
-        name: "To Do",
-        color: "bg-gray-500",
-        dotColor: "bg-gray-400",
-        group: "Not started",
-    },
-    {
-        name: "In development",
-        color: "bg-blue-500",
-        dotColor: "bg-blue-400",
-        group: "In progress",
-    },
-    {
-        name: "Testing",
-        color: "bg-pink-500",
-        dotColor: "bg-pink-400",
-        group: "In progress",
-    },
-    {
-        name: "Reviewing",
-        color: "bg-purple-500",
-        dotColor: "bg-purple-400",
-        group: "In progress",
-    },
-    {
-        name: "Done",
-        color: "bg-green-500",
-        dotColor: "bg-green-300",
-        group: "Complete",
-    },
-];
+
+const boardUrl = new URL(`/api/boards/${boardId}`, Astro.request.url);
+const boardResponse = await fetch(boardUrl.toString(), {
+  headers: {
+    'cookie': Astro.request.headers.get('cookie') || '',
+    'authorization': Astro.request.headers.get('authorization') || ''
+  }
+});
+
+const board = await boardResponse.json();
+
+const propertiesUrl = new URL(`/api/boards/${boardId}/properties`, Astro.request.url);
+const boardPropertiesResponse = await fetch(propertiesUrl.toString(), {
+  headers: {
+    'cookie': Astro.request.headers.get('cookie') || '',
+    'authorization': Astro.request.headers.get('authorization') || ''
+  }
+});
+const boardProperties = await boardPropertiesResponse.json();
 ---
 
 <Layout>
@@ -110,158 +67,84 @@ const statusOptions = [
         <div
             class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-midnight-800"
         >
+            <ProjectSwitcher />
             <ul class="space-y-2 font-medium">
                 {
-                    data.map((column) => (
-                        <li>
-                            <details class="group">
-                                <summary class="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700">
-                                    <span class="flex items-center space-x-2">
-                                        <svg
-                                            class="w-4 h-4 text-midnight-400 group-open:rotate-90 transition-transform"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M9 5l7 7-7 7"
-                                            />
-                                        </svg>
-                                        <span>{column.name}</span>
-                                    </span>
-                                    <button class="text-sm text-midnight-600 dark:text-midnight-200 hover:underline">
-                                        ⋮
-                                    </button>
-                                </summary>
-                                <ul class="pl-6 mt-2 space-y-1">
-                                    {column.tasks.map((task, index) => (
-                                        <li>
-                                            <a
-                                                href="#"
-                                                class="flex items-center p-2 rounded-lg text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700"
+                    board.map((groups) =>
+                        groups.options.map((option) => (
+                            <li>
+                                <details class="group">
+                                    <summary class="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700">
+                                        <span class="flex items-center space-x-2">
+                                            <svg
+                                                class="w-4 h-4 text-midnight-400 group-open:rotate-90 transition-transform"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
                                             >
-                                                {task}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </details>
-                        </li>
-                    ))
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 5l7 7-7 7"
+                                                />
+                                            </svg>
+                                            <span>{option.option}</span>
+                                        </span>
+                                        <button class="text-sm text-midnight-600 dark:text-midnight-200 hover:underline">
+                                            ⋮
+                                        </button>
+                                    </summary>
+                                    <ul class="pl-6 mt-2 space-y-1">
+                                        {option.tasks.map((task, index) => (
+                                            <li>
+                                                <task-select data-task={JSON.stringify(task)}>
+                                                    <button
+                                                        type="button"
+                                                        class="select-task
+                                                        w-full text-left flex items-center p-2
+                                                        rounded-lg text-midnight-900 
+                                                        dark:text-white 
+                                                        hover:bg-midnight-100 dark:hover:bg-midnight-700 
+                                                        focus:outline-none cursor-pointer
+                                                        active:bg-midnight-200 dark:active:bg-midnight-600
+                                                        transition-colors duration-100 ease-in-out: 
+                                                        "
+                                                    >
+                                                        {task?.properties?.Name
+                                                            ?.title[0]
+                                                            ?.plain_text ||
+                                                            "Unnamed Task"}
+                                                    </button>
+                                                </task-select>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </details>
+                            </li>
+                        )),
+                    )
                 }
             </ul>
         </div>
     </aside>
-    <!-- main panel -->
     <div class="hidden sm:block pt-6 sm:ml-64 mt-14 px-24">
-        <!-- Timer -->
         <Pomodoro client:load />
-        <form class="pt-8">
-            <h2 class="text-white mb-5 text-2xl font-bold">New Task</h2>
-            <div class="flex gap-2 mb-5 items-center">
-                <label                                                                                                                                                                                                                                      
-                    for="task name"
-                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Task Name</label
-                >
-                <input
-                    type="text"
-                    id="task name"
-                    class="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Task Name"
-                    required
-                />
-            </div>
-            <div class="flex gap-2 mb-5 items-center">
-                <label
-                    for="status"
-                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Status</label
-                >
-                <Dropdown key="1" options={statusOptions} placeholder="Select status"/>
-            </div>
-            <div class="flex gap-2 mb-5 items-center">
-                <label
-                    for="priority"
-                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Priority</label
-                >
-                <Dropdown key="2" options={statusOptions} placeholder="Select priority"/>
-            </div>
-            <div class="flex gap-2 mb-5 items-center">
-                <label
-                    for="assign"
-                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Assign</label
-                >
-                <Dropdown key="3" options={statusOptions} placeholder="Select assignee"/>
-            </div>
-            <div class="flex gap-2 mb-5 items-center">
-                <label
-                    for="category"
-                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Category</label
-                >
-                <Dropdown key="4" options={statusOptions} placeholder="Select category"/>
-            </div>
-            <div class="flex gap-2 mb-5 items-center">
-                <label
-                    for="start date"
-                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Start Date</label
-                >
-                <input
-                    type="date"
-                    id="start date"
-                    class="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required
-                />
-            </div>
-            <div class="flex gap-2 mb-5 items-center">
-                <label
-                    for="deadline"
-                    class="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Deadline</label
-                >
-                <input
-                    type="date"
-                    id="deadline"
-                    class="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required
-                />
-            </div>
-            <div class="flex flex-col gap-2 mb-5">
-                <label
-                    for="description"
-                    class="block text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Description</label
-                >
-                <textarea
-                    id="description"
-                    rows="4"
-                    class="block p-2.5 w-full text-sm text-midnight-900 bg-midnight-50 rounded-lg border border-midnight-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Task description..."></textarea>
-            </div>
-            <div class="flex flex-col gap-2 mb-5">
-                <label
-                    for="comment"
-                    class="block text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Comments</label
-                >
-                <textarea
-                    id="comment"
-                    rows="4"
-                    class="block p-2.5 w-full text-sm text-midnight-900 bg-midnight-50 rounded-lg border border-midnight-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Write a comment..."></textarea>
-            </div>
-            <button
-                type="submit"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >Submit</button
-            >
-        </form>
+        <TaskForm properties={boardProperties} client:load />
     </div>
 </Layout>
+
+
+<script>
+  class TaskSelect extends HTMLElement {
+    connectedCallback() {
+      const task = JSON.parse(this.dataset.task);
+      const button = this.querySelector('button');
+      button?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent("task:selected", { detail: task }));
+      });
+    }
+  }
+
+  customElements.define('task-select', TaskSelect);
+</script>
