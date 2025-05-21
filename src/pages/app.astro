@@ -4,7 +4,8 @@ import { UserButton } from "@clerk/astro/components";
 import TaskForm from "@components/TaskForm.tsx";
 import Pomodoro from "@components/Pomodoro.tsx";
 import ProjectSwitcher from "@components/ProjectSwitcher.tsx";
-import TasksList from "@components/TasksList"
+import TasksList from "@components/TasksList.tsx"
+
 const user = await Astro.locals.currentUser();
 if (!user) return new Response("Unauthorized", { status: 401 });
 
@@ -59,7 +60,7 @@ const boardProperties = await boardPropertiesResponse.json();
         >
             <ProjectSwitcher client:load />
             <!-- <button id="focus-session-button" client:only>Add Focus Session</button> -->
-
+            <TasksList client:load />
             <!-- <ul class="space-y-2 font-medium">
                 {
                     board.map((groups) =>

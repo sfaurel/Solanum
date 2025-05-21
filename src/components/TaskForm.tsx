@@ -1,24 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Dropdown } from "../components/Dropdown.tsx";
-
-
+import { useBoardsStore } from "@stores/boardsStore";
 
 
 export default function TaskForm({ properties }) {
-    const [task, setTask] = useState(null);
+    const selectedTask = useBoardsStore((s) => s.selectedTask);
+    // const [task, setTask] = useState(null);
 
-    useEffect(() => {
-        const handler = (e) => setTask(e.detail);
-        window.addEventListener("task:selected", handler);
-        return () => window.removeEventListener("task:selected", handler);
-    }, []);
-
-
-    console.log('task22', properties)
+    // useEffect(() => {
+    //     const handler = (e) => setTask(e.detail);
+    //     window.addEventListener("task:selected", handler);
+    //     return () => window.removeEventListener("task:selected", handler);
+    // }, []);
 
     return (
         <form className="pt-8">
-            <h2 className="text-white mb-5 text-2xl font-bold">{task?.properties.Name?.title[0]?.plain_text || "New Task"}</h2>
+            <h2 className="text-white mb-5 text-2xl font-bold">{selectedTask ? selectedTask?.properties.Name?.title[0]?.plain_text || "Unnamed Task" : "New Task"}</h2>
             <div className="flex gap-2 mb-5 items-center">
                 <label
                     htmlFor="task name"
@@ -31,7 +28,7 @@ export default function TaskForm({ properties }) {
                     className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Task Name"
                     required
-                    defaultValue={task?.properties.Name?.title[0]?.plain_text || ''}
+                    defaultValue={selectedTask?.properties.Name?.title[0]?.plain_text || ''}
                 />
             </div>
             <div className="flex gap-2 mb-5 items-center">
@@ -78,7 +75,7 @@ export default function TaskForm({ properties }) {
                     id="start date"
                     className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
-                    defaultValue={task?.properties["Start Date"]?.date?.start || ''}
+                    defaultValue={selectedTask?.properties["Start Date"]?.date?.start || ''}
                 />
             </div>
             <div className="flex gap-2 mb-5 items-center">
@@ -92,7 +89,7 @@ export default function TaskForm({ properties }) {
                     id="deadline"
                     className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
-                    defaultValue={task?.properties.Deadline?.date?.start || ''}
+                    defaultValue={selectedTask?.properties.Deadline?.date?.start || ''}
                 />
             </div>
             <div className="flex flex-col gap-2 mb-5">
@@ -106,7 +103,7 @@ export default function TaskForm({ properties }) {
                     rows={4}
                     className="block p-2.5 w-full text-sm text-midnight-900 bg-midnight-50 rounded-lg border border-midnight-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Task description..."
-                    defaultValue={task?.properties.Description?.rich_text[0]?.plain_text || ''}
+                    defaultValue={selectedTask?.properties.Description?.rich_text[0]?.plain_text || ''}
                 />
             </div>
             {/* <div className="flex flex-col gap-2 mb-5">
@@ -125,7 +122,7 @@ export default function TaskForm({ properties }) {
             <button
                 type="submit"
                 className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >{task ? "Edit" : "Create"}
+            >{selectedTask ? "Edit" : "Create"}
             </button>
         </form>
     );

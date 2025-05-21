@@ -32,7 +32,7 @@ export const GET = withAuth(async (userId, context) => {
 
         const properties = board.properties;
         const field = {};
-        console.log(properties)
+        
         for (const [key, property] of Object.entries(properties)) {
             const type = property.type;
 
