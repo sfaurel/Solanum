@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Countdown from './Countdown.tsx';
 
-export default function TimerWrapper() {
+export default function Pomodoro() {
   const [paused, setPaused] = useState(true);
 
   const toggle = () => setPaused((prev) => !prev);
