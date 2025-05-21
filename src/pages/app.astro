@@ -61,53 +61,6 @@ const boardProperties = await boardPropertiesResponse.json();
             <ProjectSwitcher client:load />
             <!-- <button id="focus-session-button" client:only>Add Focus Session</button> -->
             <TasksList client:load />
-            <!-- <ul class="space-y-2 font-medium">
-                {
-                    board.map((groups) =>
-                        groups.options.map((option) => (
-                            <li>
-                                <details class="group">
-                                    <summary class="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700">
-                                        <span class="flex items-center space-x-2">
-                                            <ArrowIcon className="w-4 h-4 text-midnight-400 group-open:rotate-90 transition-transform" />
-
-                                            <span>{option.option}</span>
-                                        </span>
-                                        <button class="text-sm text-midnight-600 dark:text-midnight-200 hover:underline">
-                                            ⋮
-                                        </button>
-                                    </summary>
-                                    <ul class="pl-6 mt-2 space-y-1">
-                                        {option.tasks.map((task, index) => (
-                                            <li>
-                                                <task-select data-task={JSON.stringify(task)}>
-                                                    <button
-                                                        type="button"
-                                                        class="select-task
-                                                        w-full text-left flex items-center p-2
-                                                        rounded-lg text-midnight-900 
-                                                        dark:text-white 
-                                                        hover:bg-midnight-100 dark:hover:bg-midnight-700 
-                                                        focus:outline-none cursor-pointer
-                                                        active:bg-midnight-200 dark:active:bg-midnight-600
-                                                        transition-colors duration-100 ease-in-out: 
-                                                        "
-                                                    >
-                                                        {task?.properties?.Name
-                                                            ?.title[0]
-                                                            ?.plain_text ||
-                                                            "Unnamed Task"}
-                                                    </button>
-                                                </task-select>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </details>
-                            </li>
-                        )),
-                    )
-                }
-            </ul> -->
         </div>
     </aside>
     <div class="hidden sm:block pt-6 sm:ml-64 mt-14 px-24">
@@ -118,18 +71,6 @@ const boardProperties = await boardPropertiesResponse.json();
 
 
 <script>
-  class TaskSelect extends HTMLElement {
-    connectedCallback() {
-      const task = JSON.parse(this.dataset.task);
-      const button = this.querySelector('button');
-      button?.addEventListener('click', () => {
-        window.dispatchEvent(new CustomEvent("task:selected", { detail: task }));
-      });
-    }
-  }
-
-  customElements.define('task-select', TaskSelect);
-
    document.getElementById('focus-session-button')?.addEventListener('click', async () => {
     const response = await fetch('http://localhost:4321/api/boards/123/tasks/1f9acd6d57e281359f1ddfe05125fdf8/focus_sessions', {
       method: 'POST',
