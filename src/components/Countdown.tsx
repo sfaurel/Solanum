@@ -1,56 +1,70 @@
 import { useEffect, useRef, useState } from "react";
+import { Temporal } from "temporal-polyfill";
 
-function formatTime(seconds) {
+function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
-export default function TimerComponent({ durationMinutes = 1, paused, onUpdate, className = '' }) {
+export default function Countdown({
+  durationMinutes = 1,
+  paused,
+  onUpdate,
+  className = ''
+}: {
+  durationMinutes?: number;
+  paused: boolean;
+  onUpdate?: (data: { minutesLeft: number; endTime: Temporal.Instant }) => void;
+  className?: string;
+}) {
   const [remainingTime, setRemainingTime] = useState(durationMinutes * 60);
-  const intervalRef = useRef(null);
-  const endTimeRef = useRef(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const endTimeRef = useRef<Temporal.Instant | null>(null);
   const initialRun = useRef(true);
 
   useEffect(() => {
-    if (initialRun.current && !paused) {
-      endTimeRef.current = Date.now() + remainingTime * 1000;
-      initialRun.current = false;
-    }
+
 
     if (!paused) {
-      if (!endTimeRef.current) {
-        endTimeRef.current = Date.now() + remainingTime * 1000;
-      }
+      endTimeRef.current = Temporal.Now.instant().add({ seconds: remainingTime });
+
 
       intervalRef.current = setInterval(() => {
-        const diff = Math.max(0, Math.floor((endTimeRef.current - Date.now()) / 1000));
-        setRemainingTime(diff);
-        onUpdate && onUpdate({
-          minutesLeft: Math.ceil(diff / 60),
-          endTime: new Date(endTimeRef.current)
+        const now = Temporal.Now.instant();
+        const diff = endTimeRef.current!.since(now, { smallestUnit: "second" });
+        const secondsLeft = Math.max(0, diff.seconds);
+
+        setRemainingTime(secondsLeft);
+        onUpdate?.({
+          minutesLeft: Math.ceil(secondsLeft / 60),
+          endTime: endTimeRef.current!
         });
 
-        if (diff === 0) {
-          clearInterval(intervalRef.current);
+        if (secondsLeft === 0) {
+          clearInterval(intervalRef.current!);
         }
       }, 1000);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
+
       if (endTimeRef.current) {
-        const diff = Math.max(0, Math.floor((endTimeRef.current - Date.now()) / 1000));
-        setRemainingTime(diff);
-        onUpdate && onUpdate({
-          minutesLeft: Math.ceil(diff / 60),
-          endTime: new Date(Date.now() + diff * 1000)
+        const now = Temporal.Now.instant();
+        const diff = endTimeRef.current.since(now, { smallestUnit: "second" });
+        const secondsLeft = Math.max(0, diff.seconds);
+        setRemainingTime(secondsLeft);
+
+        onUpdate?.({
+          minutesLeft: Math.ceil(secondsLeft / 60),
+          endTime: Temporal.Now.instant().add({ seconds: secondsLeft })
         });
       }
     }
 
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [paused]);
 
-  return (
-    <p className={className}>{formatTime(remainingTime)}</p>
-  );
+  return <p className={className}>{formatTime(remainingTime)}</p>;
 }

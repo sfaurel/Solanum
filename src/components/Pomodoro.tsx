@@ -52,7 +52,7 @@ export default function Pomodoro() {
           <Countdown
             className="px-4 text-6xl font-semibold text-midnight-900 dark:text-white"
             paused={paused}
-            durationMinutes={25}
+            durationMinutes={2}
           />
       </div>
     </section>

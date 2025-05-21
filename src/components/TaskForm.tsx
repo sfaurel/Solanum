@@ -5,13 +5,6 @@ import { useBoardsStore } from "@stores/boardsStore";
 
 export default function TaskForm({ properties }) {
     const selectedTask = useBoardsStore((s) => s.selectedTask);
-    // const [task, setTask] = useState(null);
-
-    // useEffect(() => {
-    //     const handler = (e) => setTask(e.detail);
-    //     window.addEventListener("task:selected", handler);
-    //     return () => window.removeEventListener("task:selected", handler);
-    // }, []);
 
     return (
         <form className="pt-8">
