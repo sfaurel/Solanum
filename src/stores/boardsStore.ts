@@ -27,7 +27,7 @@ export const useBoardsStore = create<BoardsStore>((set) => ({
     set({ boards: boards })
   },
   selectBoard: (id) => {
-    localStorage.setItem('selected_project_id', id ?? "")
+    // localStorage.setItem('selected_project_id', id ?? "")
     set({ selectedBoardId: id })
   }
 }))

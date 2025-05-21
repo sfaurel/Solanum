@@ -4,23 +4,12 @@ import { UserButton } from "@clerk/astro/components";
 import TaskForm from "@components/TaskForm.tsx";
 import Pomodoro from "@components/Pomodoro.tsx";
 import ProjectSwitcher from "@components/ProjectSwitcher.tsx";
-import ArrowIcon from "@assets/ArrowIcon.astro"
-
+import TasksList from "@components/TasksList"
 const user = await Astro.locals.currentUser();
 if (!user) return new Response("Unauthorized", { status: 401 });
 
 const boardId = import.meta.env.NOTION_DATABASE_ID;
 
-
-const boardUrl = new URL(`/api/boards/${boardId}`, Astro.request.url);
-const boardResponse = await fetch(boardUrl.toString(), {
-  headers: {
-    'cookie': Astro.request.headers.get('cookie') || '',
-    'authorization': Astro.request.headers.get('authorization') || ''
-  }
-});
-
-const board = await boardResponse.json();
 
 const propertiesUrl = new URL(`/api/boards/${boardId}/properties`, Astro.request.url);
 const boardPropertiesResponse = await fetch(propertiesUrl.toString(), {
@@ -71,7 +60,7 @@ const boardProperties = await boardPropertiesResponse.json();
             <ProjectSwitcher client:load />
             <!-- <button id="focus-session-button" client:only>Add Focus Session</button> -->
 
-            <ul class="space-y-2 font-medium">
+            <!-- <ul class="space-y-2 font-medium">
                 {
                     board.map((groups) =>
                         groups.options.map((option) => (
@@ -117,7 +106,7 @@ const boardProperties = await boardPropertiesResponse.json();
                         )),
                     )
                 }
-            </ul>
+            </ul> -->
         </div>
     </aside>
     <div class="hidden sm:block pt-6 sm:ml-64 mt-14 px-24">
