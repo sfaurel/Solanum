@@ -103,7 +103,6 @@ export const Dropdown: React.FC<Props> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
-  console.log("dbg",schema)
   const isGrouped = schema.groups && schema.groups.length > 0;
   const options: Option[] = isGrouped
     ? schema.groups!.flatMap((group) =>

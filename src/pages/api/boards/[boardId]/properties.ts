@@ -8,7 +8,7 @@ const TTL_MINUTES = 5;
 
 export const GET = withAuth(async (userId, context) => {
     const boardId = context.params.boardId;
-    const CACHE_DIR = "cache";
+    const CACHE_DIR = "./cache";
     const CACHE_FILE = path.join(CACHE_DIR, `${boardId}.json`);
     const now = Temporal.Now.instant();
 
