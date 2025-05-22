@@ -8,7 +8,7 @@ const TTL_MINUTES = 5;
 
 export const GET = withAuth(async (userId, context) => {
     const boardId = context.params.boardId;
-    const CACHE_DIR = "./cache";
+    const CACHE_DIR = "/tmp/cache";
     const CACHE_FILE = path.join(CACHE_DIR, `${boardId}.json`);
     const now = Temporal.Now.instant();
 
@@ -18,6 +18,7 @@ export const GET = withAuth(async (userId, context) => {
 
         if (now.since(modified).total({ unit: "minute" }) < TTL_MINUTES) {
             const raw = await fs.readFile(CACHE_FILE, "utf-8");
+            console.log('cache used')
             return new Response(raw, {
                 headers: { 'Content-Type': 'application/json' }
             });

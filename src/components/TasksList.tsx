@@ -37,13 +37,10 @@ export default function TaskList() {
         const fetchTasks = async () => {
             try {
                 setLoading(true);
-                console.log("b0" )
-
                 const response = await fetch(`/api/boards/${selectedBoardId}`, {
                     credentials: "include",
                 });
                 const data  = await response.json();
-                console.log("b", data )
                 setSelectedTaskId(null); 
                 setBoard(data);
             } catch (error) {
