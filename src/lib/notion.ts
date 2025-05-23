@@ -10,7 +10,7 @@ export async function getNotionClientForUser(userId: string, context: any): Prom
       throw new Error("Notion OAuth token not found for this user.");
     }
 
-    const notionToken = tokens[0].token;
+    const notionToken = import.meta.env.NOTION_TOKEN || tokens[0].token;
     return new Client({ auth: notionToken });
 
   } catch (error: any) {

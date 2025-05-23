@@ -11,12 +11,14 @@ export default function Countdown({
   durationMinutes = 1,
   paused,
   onUpdate,
-  className = ''
+  className = '',
+  onFinish,
 }: {
   durationMinutes?: number;
   paused: boolean;
   onUpdate?: (data: { minutesLeft: number; endTime: Temporal.Instant }) => void;
   className?: string;
+  onFinish?: () => void;
 }) {
   const [remainingTime, setRemainingTime] = useState(durationMinutes * 60);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -43,6 +45,7 @@ export default function Countdown({
 
         if (secondsLeft === 0) {
           clearInterval(intervalRef.current!);
+          onFinish?.();
         }
       }, 1000);
     } else {
