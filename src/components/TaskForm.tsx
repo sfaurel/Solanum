@@ -4,7 +4,76 @@ import { useBoardsStore } from "@stores/boardsStore";
 
 
 export default function TaskForm({ properties }) {
+    const selectedBoardId = useBoardsStore((s) => s.selectedBoardId);
     const selectedTask = useBoardsStore((s) => s.selectedTask);
+    const [formData, setFormData] = useState({});
+
+    useEffect(() => {
+      if (selectedTask) {
+        setFormData({
+            name: selectedTask.properties.Name?.title[0]?.plain_text || '',
+            // status: selectedTask.properties.Status?.select?.name || '',
+            // priority: selectedTask.properties.Priority?.select?.name || '',
+            // category: selectedTask.properties.Category?.select?.name || '',
+            startDate: selectedTask.properties["Start Date"]?.date?.start || '',
+            deadline: selectedTask.properties.Deadline?.date?.start || '',
+            description: selectedTask.properties.Description?.rich_text[0]?.plain_text || '',
+            // comment: "Comments" 
+        });
+      }
+    }, [selectedTask]);
+     
+    const handleChange = (nombre, valor) => {
+        setFormData((prev) => ({ ...prev, [nombre]: valor }));
+    };
+
+
+    async function handleSubmitForm() {
+        if (selectedTask) {
+            editTask(selectedBoardId, selectedTask.id)
+        }
+        else {
+            createTask(selectedBoardId)
+        }
+    }
+
+    async function createTask(boardId: string) {
+        const response = await fetch(`/api/boards/${boardId}/tasks`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(form)
+        });
+
+        if (response.ok) {
+            alert('New task added successfully!');
+        } else {
+            alert('Error adding new task.');
+            console.error(await response.text());
+        }
+    }
+
+    async function editTask(boardId: string, taskId: string) {
+        const response = await fetch(`/api/boards/${boardId}/tasks/${taskId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(form)
+        });
+
+
+        if (response.ok) {
+            alert('Task edited successfully!');
+        } else {
+            alert('Error editing new task.');
+            console.error(await response.text());
+        }
+    }
+
 
     return (
         <form className="pt-8">
@@ -21,7 +90,9 @@ export default function TaskForm({ properties }) {
                     className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Task Name"
                     required
-                    defaultValue={selectedTask?.properties.Name?.title[0]?.plain_text || ''}
+                    value={formData["name"] || ''}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    // defaultValue={selectedTask?.properties.Name?.title[0]?.plain_text || ''}
                 />
             </div>
             <div className="flex gap-2 mb-5 items-center">
@@ -67,8 +138,9 @@ export default function TaskForm({ properties }) {
                     type="date"
                     id="start date"
                     className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required
-                    defaultValue={selectedTask?.properties["Start Date"]?.date?.start || ''}
+                    value={formData["startDate"] || ''}
+                    onChange={(e) => handleChange("startDate", e.target.value)}
+                    // defaultValue={selectedTask?.properties["Start Date"]?.date?.start || ''}
                 />
             </div>
             <div className="flex gap-2 mb-5 items-center">
@@ -81,8 +153,9 @@ export default function TaskForm({ properties }) {
                     type="date"
                     id="deadline"
                     className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required
-                    defaultValue={selectedTask?.properties.Deadline?.date?.start || ''}
+                    value={formData["deadline"] || ''}
+                    onChange={(e) => handleChange("deadline", e.target.value)}
+                    // defaultValue={selectedTask?.properties.Deadline?.date?.start || ''}
                 />
             </div>
             <div className="flex flex-col gap-2 mb-5">
@@ -96,7 +169,9 @@ export default function TaskForm({ properties }) {
                     rows={4}
                     className="block p-2.5 w-full text-sm text-midnight-900 bg-midnight-50 rounded-lg border border-midnight-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Task description..."
-                    defaultValue={selectedTask?.properties.Description?.rich_text[0]?.plain_text || ''}
+                    value={formData["description"] || ''}
+                    onChange={(e) => handleChange("description", e.target.value)}
+                    // defaultValue={selectedTask?.properties.Description?.rich_text[0]?.plain_text || ''}
                 />
             </div>
             {/* <div className="flex flex-col gap-2 mb-5">
@@ -113,8 +188,16 @@ export default function TaskForm({ properties }) {
                 />
             </div> */}
             <button
+                disabled={!selectedBoardId}
                 type="submit"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="rounded-lg w-full sm:w-auto px-5 py-2.5
+                    text-white text-sm text-center font-medium 
+                    transition transform focus:scale-95
+                    bg-blue-700 hover:bg-blue-800
+                    dark:bg-blue-600 dark:hover:bg-blue-700
+                    disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300
+                "
+                onClick={handleSubmitForm}
             >{selectedTask ? "Edit" : "Create"}
             </button>
         </form>
