@@ -5,13 +5,14 @@ import { Toaster, toast } from 'sonner'
 import bell from "@assets/bell.mp3";
 import { useBoardsStore } from "@stores/boardsStore";
 
+const defaultSessionDuration = .5
 
 
 export default function Pomodoro() {
   const [paused, setPaused] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const selectedTask = useBoardsStore((s) => s.selectedTask);
-
+  const [sessionDuration, setSessionDuration] = useState(defaultSessionDuration)
   useEffect(() => {
     audioRef.current = new Audio(bell);
   }, []);
@@ -76,6 +77,10 @@ export default function Pomodoro() {
     }
   }
 
+  function handleReset(){
+    setSessionDuration(defaultSessionDuration)
+  }
+
   return (
     <section
       className=" max-h-40
@@ -117,11 +122,11 @@ export default function Pomodoro() {
 
       </div>
       <div className="flex flex-col items-center w-full">
-        <p className="text-2xl">Current task</p>
+        <p className="text-2xl">{selectedTask?.properties.Name?.title[0]?.plain_text || 'No task selected'}</p>
         <Countdown
           className="px-4 text-6xl pb-2 font-semibold text-midnight-900 dark:text-white"
           paused={paused}
-          durationMinutes={.5}
+          durationMinutes={sessionDuration}
           onFinish={onCountEnd}
         />
         <p><span
@@ -133,11 +138,13 @@ export default function Pomodoro() {
       </div>
       <div className="flex flex-col max-w-28 w-full space-y-4">
         <button
+          disabled
           className="
               flex items-center justify-center w-full pb-1 
               rounded-md cursor-pointer text-white transition
               bg-midnight-200  hover:bg-midnight-300
               dark:bg-midnight-600 hover:dark:bg-midnight-500 
+              disabled:bg-gray-600 disabled:text-gray-500 disabled:hover:bg-gray-600 disabled:cursor-default
             "
           title="Reset timer"
         // onClick={handleReset}
@@ -145,23 +152,27 @@ export default function Pomodoro() {
           Edit task
         </button>
         <button
+          disabled
           className="
               flex items-center justify-center w-full pb-1 
               rounded-md cursor-pointer text-white transition
               bg-midnight-200  hover:bg-midnight-300
               dark:bg-midnight-600 hover:dark:bg-midnight-500 
+              disabled:bg-gray-600 disabled:text-gray-500 disabled:hover:bg-gray-600 disabled:cursor-default
             "
           title="Reset timer"
-        // onClick={handleReset}
+        onClick={handleReset}
         >
           Reset Timer
         </button>
         <button
+          disabled
           className="
               flex items-center justify-center w-full pb-1
               rounded-md cursor-pointer text-white transition
               bg-midnight-200  hover:bg-midnight-300
               dark:bg-midnight-600 hover:dark:bg-midnight-500 
+              disabled:bg-gray-600 disabled:text-gray-500 disabled:hover:bg-gray-600 disabled:cursor-default
             "
           title="Reset timer"
         // onClick={handleReset}
