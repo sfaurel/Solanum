@@ -24,6 +24,7 @@ export interface Props {
   schema: Schema;
   selected?: string;
   placeholder?: string;
+  onChange?: (selected: Option) => void;
 }
 
 export const styleClasses = {
@@ -100,6 +101,7 @@ export const Dropdown: React.FC<Props> = ({
   schema,
   selected = "",
   placeholder = "Select",
+  onChange,
 }) => {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
@@ -117,11 +119,21 @@ export const Dropdown: React.FC<Props> = ({
     ? [...new Set(schema.groups?.map((g) => g.name))]
     : [];
 
+  useEffect(() => {
+    if (selected) {
+      const found = options.find((opt) => opt.id === selected);
+      if (found) setSelectedOption(found);
+    }
+  }, [selected, options]);
+
   const handleSelect = (opt: Option) => {
     setSelectedOption(opt);
     setOpen(false);
+    if (onChange){
+      onChange(opt); 
+    } 
   };
-
+  
   const renderOption = (opt: Option) => {
     const colorStyle= styleClasses[opt.color] || styleClasses["gray"];
     const style = colorStyle[schema.type === "status" ? "pill" : schema.type === "select" ? 'badge' : null] || '';
@@ -130,7 +142,7 @@ export const Dropdown: React.FC<Props> = ({
       <button
         key={opt.id}
         onClick={() => handleSelect(opt)}
-        className="flex items-center w-full px-2.5 text-left hover:bg-midnight-300 hover:dark:bg-midnight-700"
+        className="flex items-center w-full px-2.5 my-2 text-left hover:bg-midnight-300 hover:dark:bg-midnight-700"
       >
         <div className={`flex items-center px-2 py-0.5 gap-1.5 text-white ${style.bg}`}>
           {schema.type === "status" && (

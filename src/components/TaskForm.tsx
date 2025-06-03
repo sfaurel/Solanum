@@ -12,9 +12,9 @@ export default function TaskForm({ properties }) {
       if (selectedTask) {
         setFormData({
             name: selectedTask.properties.Name?.title[0]?.plain_text || '',
-            // status: selectedTask.properties.Status?.select?.name || '',
-            // priority: selectedTask.properties.Priority?.select?.name || '',
-            // category: selectedTask.properties.Category?.select?.name || '',
+            status: selectedTask.properties.Status?.select?.name || '',
+            priority: selectedTask.properties.Priority?.select?.name || '',
+            category: selectedTask.properties.Category?.select?.name || '',
             startDate: selectedTask.properties["Start Date"]?.date?.start || '',
             deadline: selectedTask.properties.Deadline?.date?.start || '',
             description: selectedTask.properties.Description?.rich_text[0]?.plain_text || '',
@@ -44,7 +44,7 @@ export default function TaskForm({ properties }) {
                 'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify(form)
+            body: JSON.stringify(formData)
         });
 
         if (response.ok) {
@@ -62,7 +62,7 @@ export default function TaskForm({ properties }) {
                 'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify(form)
+            body: JSON.stringify(formData)
         });
 
 
@@ -101,7 +101,12 @@ export default function TaskForm({ properties }) {
                     className="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
                 >Status</label
                 >
-                <Dropdown key="status" schema={properties.Status} placeholder="Select status" />
+                <Dropdown
+                    key="status"
+                    schema={properties.Status}
+                    placeholder="Select status"
+                    onChange={(selected) => handleChange("status", selected)}
+                />
             </div>
             <div className="flex gap-2 mb-5 items-center">
                 <label
@@ -109,7 +114,12 @@ export default function TaskForm({ properties }) {
                     className="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
                 >Priority</label
                 >
-                <Dropdown key="status" schema={properties.Priority} placeholder="Select priority" />
+                <Dropdown
+                    key="priority"
+                    schema={properties.Priority}
+                    placeholder="Select priority"
+                    onChange={(selected) => handleChange("priority", selected)}    
+                />
 
             </div>
             {/* <div className="flex gap-2 mb-5 items-center">
@@ -126,7 +136,12 @@ export default function TaskForm({ properties }) {
                     className="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
                 >Category</label
                 >
-                <Dropdown key="status" schema={properties.Category} placeholder="Select category" />
+                <Dropdown 
+                    key="category"
+                    schema={properties.Category}
+                    placeholder="Select category"
+                    onChange={(selected) => handleChange("category", selected)}
+                />
             </div>
             <div className="flex gap-2 mb-5 items-center">
                 <label
@@ -188,7 +203,6 @@ export default function TaskForm({ properties }) {
                 />
             </div> */}
             <button
-                disabled={!selectedBoardId}
                 type="submit"
                 className="rounded-lg w-full sm:w-auto px-5 py-2.5
                     text-white text-sm text-center font-medium 
