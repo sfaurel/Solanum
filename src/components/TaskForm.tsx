@@ -76,7 +76,7 @@ export default function TaskForm({ properties }) {
 
 
     return (
-        <form className="pt-8">
+        <form className="pt-8 max-w-[90ch] w-full self-center">
             <h2 className="text-white mb-5 text-2xl font-bold">{selectedTask ? selectedTask?.properties.Name?.title[0]?.plain_text || "Unnamed Task" : "New Task"}</h2>
             <div className="flex gap-2 mb-5 items-center">
                 <label

@@ -57,7 +57,7 @@ console.log("bp",boardProperties)
         <aside
             id="logo-sidebar"
             class="fixed top-0 left-0 z-40 h-screen pt-20 pb-44
-                w-full md:w-64
+                w-full sm:w-64 
                 border-r 
                 bg-white border-midnight-200
                 dark:bg-midnight-800 dark:border-midnight-700
@@ -71,7 +71,7 @@ console.log("bp",boardProperties)
                 <TasksList client:load />
             </div>
         </aside>
-        <div class="hidden sm:block pt-6 sm:ml-64 mt-14 px-24">
+        <div class="hidden sm:flex sm:flex-col ml-64 mt-14 px-8 w-[calc(100%-16rem)] justify-center pb-48">
             <TaskForm properties={boardProperties} client:load />
         </div>
     </main>
