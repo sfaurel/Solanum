@@ -22,8 +22,8 @@ interface BoardGroup {
 
 export default function TaskList() {
     const selectedBoardId = useBoardsStore((state) => state.selectedBoardId);
-    const selectTask = useBoardsStore((s) => s.selectTask);
-    const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+    const selectTask = useBoardsStore((state) => state.selectTask);
+    const selectedTask = useBoardsStore((state) => state.selectedTask);
     const [board, setBoard] = useState<BoardGroup[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -41,7 +41,7 @@ export default function TaskList() {
                     credentials: "include",
                 });
                 const data  = await response.json();
-                setSelectedTaskId(null); 
+                selectTask(null); 
                 setBoard(data);
             } catch (error) {
                 console.error("Error fetching tasks:", error);
@@ -63,7 +63,6 @@ export default function TaskList() {
 
     const handleTaskClick = (task: Task) => {
         selectTask(task)
-        setSelectedTaskId(task.id);
     };
 
     return (
@@ -108,8 +107,7 @@ export default function TaskList() {
                                     onClick={(e) => {
                                         e.stopPropagation(); 
                                         //TODO: preset new task status ${option.option}`)
-                                        selectTask(null)
-                                        setSelectedTaskId(null);
+                                        selectTask(null);
                                     }}
                                 >
                                 +
@@ -118,7 +116,7 @@ export default function TaskList() {
                             <ul className="pl-6 mt-2 space-y-1">
                                 {option.tasks.map((task, index) => {
                                     const taskName = task?.properties?.Name?.title?.[0]?.plain_text || "Unnamed Task";
-                                    const isSelected = task.id === selectedTaskId;
+                                    const isSelected = task.id === selectedTask?.id;
                                     return (
                                     <li key={`task-${index}`}
                                         onClick={() => handleTaskClick(task)}

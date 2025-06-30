@@ -19,8 +19,8 @@ type BoardsStore = {
   selectedBoardId: string | null
   selectedTask: Task | null;
   fetchBoards: () => Promise<void>
-  selectBoard: (id: string) => void
-  selectTask: (task: Task) => void;
+  selectBoard: (id: string | null) => void
+  selectTask: (task: Task | null) => void;
 }
 
 export const useBoardsStore = create<BoardsStore>((set) => ({
