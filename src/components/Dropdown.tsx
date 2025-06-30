@@ -141,6 +141,7 @@ export const Dropdown: React.FC<Props> = ({
     return (
       <button
         key={opt.id}
+        type="button"
         onClick={() => handleSelect(opt)}
         className="flex items-center w-full px-2.5 my-2 text-left hover:bg-midnight-300 hover:dark:bg-midnight-700"
       >
@@ -173,6 +174,7 @@ export const Dropdown: React.FC<Props> = ({
   return (
     <div className="statusDropdown relative w-full text-sm font-medium">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className="dropdownToggle flex justify-between items-center w-full rounded-t-md rounded-b-md border bg-midnight-300 border-midnight-400 dark:bg-midnight-700 dark:border-midnight-600 px-3 py-2 cursor-pointer"
       >
