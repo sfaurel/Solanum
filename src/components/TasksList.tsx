@@ -72,7 +72,13 @@ export default function TaskList() {
                 groups.options.map((option, j) => (
                     <li key={`group-${i}-opt-${j}`}>
                         <details className="group">
-                            <summary className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700">
+                            <summary 
+                                className="group 
+                                    flex items-center justify-between 
+                                    px-2 py-2 rounded-lg cursor-pointer 
+                                    text-midnight-900 hover:bg-midnight-100
+                                    dark:text-white dark:hover:bg-midnight-700 
+                            ">
                                 <span className="flex items-center space-x-2">
                                     <svg
                                         className="w-4 h-4 text-midnight-400 group-open:rotate-90 transition-transform"
@@ -90,24 +96,43 @@ export default function TaskList() {
                                     </svg>
                                     <span className="truncate">{option.option}</span>
                                 </span>
+                                <button
+                                    className="
+                                        flex items-center text-center 
+                                        rounded-full aspect-square p-1.5  
+                                        bg-midnight-400 
+                                        dark:bg-midnight-600
+                                        opacity-0 group-hover:opacity-100 transition-opacity
+                                        cursor-pointer
+                                    "
+                                    onClick={(e) => {
+                                        e.stopPropagation(); 
+                                        //TODO: preset new task status ${option.option}`)
+                                        selectTask(null)
+                                        setSelectedTaskId(null);
+                                    }}
+                                >
+                                +
+                            </button>
                             </summary>
                             <ul className="pl-6 mt-2 space-y-1">
                                 {option.tasks.map((task, index) => {
                                     const taskName = task?.properties?.Name?.title?.[0]?.plain_text || "Unnamed Task";
                                     const isSelected = task.id === selectedTaskId;
                                     return (
-                                    <li key={`task-${index}`}>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleTaskClick(task)}
-                                            className={`select-task w-full text-left flex items-center p-2 rounded-lg focus:outline-none cursor-pointer transition-colors duration-100 ease-in-out ${
-                                            isSelected
+                                    <li key={`task-${index}`}
+                                        onClick={() => handleTaskClick(task)}
+                                        className={`select-task w-full text-left flex items-center
+                                            p-2 rounded-lg 
+                                            focus:outline-none transition-colors duration-100 ease-in-out 
+                                            cursor-pointer 
+                                            ${isSelected
                                                 ? "bg-midnight-200 dark:bg-midnight-600 font-semibold"
-                                                : "text-midnight-900 dark:text-white hover:bg-midnight-100 dark:hover:bg-midnight-700 active:bg-midnight-200 dark:active:bg-midnight-600"
-                                            }`}
-                                        >
+                                                : "text-midnight-900 active:bg-midnight-200 hover:bg-midnight-100 dark:text-white dark:hover:bg-midnight-700 dark:active:bg-midnight-600"
+                                            }
+                                        `}
+                                    >
                                             {taskName}
-                                        </button>
                                     </li>
                                     )
                                 })}
