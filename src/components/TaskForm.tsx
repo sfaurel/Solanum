@@ -5,8 +5,8 @@ import { toast, Toaster } from 'sonner';
 
 
 export default function TaskForm({ properties }) {
-    const selectedBoardId = useBoardsStore((s) => s.selectedBoardId);
-    const selectedTask = useBoardsStore((s) => s.selectedTask);
+    const selectedBoardId = useBoardsStore((state) => state.selectedBoardId);
+    const selectedTask = useBoardsStore((state) => state.selectedTask);
     const [formData, setFormData] = useState({});
 
     useEffect(() => {
@@ -88,7 +88,6 @@ export default function TaskForm({ properties }) {
         }
     }
 
-
     return (
         <>
             <Toaster />
@@ -121,7 +120,7 @@ export default function TaskForm({ properties }) {
                         key="status"
                         schema={properties.Status}
                         placeholder="Select status"
-                        onChange={(selected) => handleChange("status", selected)}
+                        onChange={(selected) => handleChange("status", selected.name)}
                     />
                 </div>
                 <div className="flex gap-2 mb-5 items-center">
@@ -134,18 +133,11 @@ export default function TaskForm({ properties }) {
                         key="priority"
                         schema={properties.Priority}
                         placeholder="Select priority"
-                        onChange={(selected) => handleChange("priority", selected)}    
+                        onChange={(selected) => handleChange("priority", selected.name)}
                     />
 
                 </div>
-                {/* <div className="flex gap-2 mb-5 items-center">
-                    <label
-                        htmlFor="assign"
-                        className="w-32 text-sm font-medium text-nowrap text-midnight-900 dark:text-white"
-                    >Assign</label
-                    >
-                    <Dropdown key="assignee" options={statusOptions} placeholder="Select assignee" /> 
-                </div> */}
+                {/* TODO: add assign*/}
                 <div className="flex gap-2 mb-5 items-center">
                     <label
                         htmlFor="category"
@@ -156,7 +148,7 @@ export default function TaskForm({ properties }) {
                         key="category"
                         schema={properties.Category}
                         placeholder="Select category"
-                        onChange={(selected) => handleChange("category", selected)}
+                        onChange={(selected) => handleChange("category", selected.name)}
                     />
                 </div>
                 <div className="flex gap-2 mb-5 items-center">
