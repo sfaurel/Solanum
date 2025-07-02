@@ -120,36 +120,49 @@ export const Dropdown: React.FC<Props> = ({
     : [];
 
   useEffect(() => {
-    if (selected) {
-      const found = options.find((opt) => opt.id === selected);
-      if (found) setSelectedOption(found);
+    if (!selected) {
+      setSelectedOption(null);
+      return;
+    }
+
+    const found = options.find((option) => option.name === selected);
+
+    if (found && selectedOption?.id !== found.id) {
+      setSelectedOption(found);
     }
   }, [selected, options]);
 
-  const handleSelect = (opt: Option) => {
-    setSelectedOption(opt);
+
+  const handleSelect = (option: Option) => {
+    
+    if (selectedOption && selectedOption.id === option.id) {
+      setOpen(false);
+      return; 
+    }
+
+    setSelectedOption(option);
     setOpen(false);
     if (onChange){
-      onChange(opt); 
+      onChange(option); 
     } 
   };
   
-  const renderOption = (opt: Option) => {
-    const colorStyle= styleClasses[opt.color] || styleClasses["gray"];
+  const renderOption = (option: Option) => {
+    const colorStyle= styleClasses[option.color] || styleClasses["gray"];
     const style = colorStyle[schema.type === "status" ? "pill" : schema.type === "select" ? 'badge' : null] || '';
 
     return (
       <button
-        key={opt.id}
+        key={option.id}
         type="button"
-        onClick={() => handleSelect(opt)}
+        onClick={() => handleSelect(option)}
         className="flex items-center w-full px-2.5 my-2 text-left hover:bg-midnight-300 hover:dark:bg-midnight-700"
       >
         <div className={`flex items-center px-2 py-0.5 gap-1.5 text-white ${style.bg}`}>
           {schema.type === "status" && (
             <div className={`w-2 h-2 rounded-full ${colorStyle.pill.dot}`} />
           )}
-          <span className="text-white">{opt.name}</span>
+          <span className="text-white">{option.name}</span>
         </div>
       </button>
     );
@@ -203,11 +216,11 @@ export const Dropdown: React.FC<Props> = ({
                     {group}
                   </div>
                   {options
-                    .filter((opt) => opt.group === group)
-                    .map((opt) => renderOption(opt))}
+                    .filter((option) => option.group === group)
+                    .map((option) => renderOption(option))}
                 </div>
               ))
-            : options.map((opt) => renderOption(opt))}
+            : options.map((option) => renderOption(option))}
         </div>
       )}
     </div>

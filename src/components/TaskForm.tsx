@@ -13,7 +13,7 @@ export default function TaskForm({ properties }) {
       if (selectedTask) {
         setFormData({
             name: selectedTask.properties.Name?.title[0]?.plain_text || '',
-            status: selectedTask.properties.Status?.select?.name || '',
+            status: selectedTask.properties.Status?.status?.name || '',
             priority: selectedTask.properties.Priority?.select?.name || '',
             category: selectedTask.properties.Category?.select?.name || '',
             startDate: selectedTask.properties["Start Date"]?.date?.start || '',
@@ -25,7 +25,12 @@ export default function TaskForm({ properties }) {
     }, [selectedTask]);
      
     const handleChange = (nombre, valor) => {
-        setFormData((prev) => ({ ...prev, [nombre]: valor }));
+        setFormData((prev) => {
+            if (prev[nombre] === valor) {
+                return { ...prev }; 
+            }
+            return { ...prev, [nombre]: valor };
+        });
     };
 
 
@@ -87,7 +92,7 @@ export default function TaskForm({ properties }) {
             console.error(await response.text());
         }
     }
-
+    
     return (
         <>
             <Toaster />
@@ -120,7 +125,8 @@ export default function TaskForm({ properties }) {
                         key="status"
                         schema={properties.Status}
                         placeholder="Select status"
-                        onChange={(selected) => handleChange("status", selected.name)}
+                        onChange={(selected) => {handleChange("status", selected.name)}}
+                        selected={formData["status"] || ''}
                     />
                 </div>
                 <div className="flex gap-2 mb-5 items-center">
@@ -134,8 +140,8 @@ export default function TaskForm({ properties }) {
                         schema={properties.Priority}
                         placeholder="Select priority"
                         onChange={(selected) => handleChange("priority", selected.name)}
+                        selected={formData["priority"] || ''}
                     />
-
                 </div>
                 {/* TODO: add assign*/}
                 <div className="flex gap-2 mb-5 items-center">
@@ -149,6 +155,8 @@ export default function TaskForm({ properties }) {
                         schema={properties.Category}
                         placeholder="Select category"
                         onChange={(selected) => handleChange("category", selected.name)}
+                        selected={formData["category"] || ''}
+
                     />
                 </div>
                 <div className="flex gap-2 mb-5 items-center">
