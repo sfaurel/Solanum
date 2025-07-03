@@ -106,8 +106,12 @@ export default function TaskList() {
                                     "
                                     onClick={(e) => {
                                         e.stopPropagation(); 
-                                        //TODO: preset new task status ${option.option}`)
-                                        selectTask(null);
+                                        selectTask({
+                                            properties: {
+                                                Name: { title: [{ plain_text: "New Task" }] },
+                                                Status: { status: { name: option.option } },
+                                            },
+                                        });
                                     }}
                                 >
                                 +

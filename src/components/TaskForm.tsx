@@ -1,14 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Dropdown } from "../components/Dropdown.tsx";
+import { Dropdown, type Schema } from "@components/Dropdown.tsx";
 import { useBoardsStore } from "@stores/boardsStore";
 import { toast, Toaster } from 'sonner';
 
+interface TaskFormProps {
+  properties: {
+    Status: Schema;
+    Priority: Schema;
+    Category: Schema;
+  };
+}
 
-export default function TaskForm({ properties }) {
+export default function TaskForm({ properties }: TaskFormProps) {
     const selectedBoardId = useBoardsStore((state) => state.selectedBoardId);
     const selectedTask = useBoardsStore((state) => state.selectedTask);
     const [formData, setFormData] = useState({});
-
+    
     useEffect(() => {
       if (selectedTask) {
         setFormData({
@@ -24,12 +31,12 @@ export default function TaskForm({ properties }) {
       }
     }, [selectedTask]);
      
-    const handleChange = (nombre, valor) => {
+    const handleChange = (field, value) => {
         setFormData((prev) => {
-            if (prev[nombre] === valor) {
+            if (prev[field] === value) {
                 return { ...prev }; 
             }
-            return { ...prev, [nombre]: valor };
+            return { ...prev, [field]: value };
         });
     };
 
@@ -37,7 +44,7 @@ export default function TaskForm({ properties }) {
     async function handleSubmitForm(e: React.FormEvent) {
         e.preventDefault();
 
-        if (selectedTask) {
+        if (selectedTask?.id) {
             editTask(selectedBoardId, selectedTask.id)
         }
         else {
@@ -112,7 +119,6 @@ export default function TaskForm({ properties }) {
                         required
                         value={formData["name"] || ''}
                         onChange={(e) => handleChange("name", e.target.value)}
-                        // defaultValue={selectedTask?.properties.Name?.title[0]?.plain_text || ''}
                     />
                 </div>
                 <div className="flex gap-2 mb-5 items-center">
@@ -171,7 +177,6 @@ export default function TaskForm({ properties }) {
                         className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         value={formData["startDate"] || ''}
                         onChange={(e) => handleChange("startDate", e.target.value)}
-                        // defaultValue={selectedTask?.properties["Start Date"]?.date?.start || ''}
                     />
                 </div>
                 <div className="flex gap-2 mb-5 items-center">
@@ -186,7 +191,6 @@ export default function TaskForm({ properties }) {
                         className="bg-midnight-50 border border-midnight-300 text-midnight-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-midnight-700 dark:border-midnight-600 dark:placeholder-midnight-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         value={formData["deadline"] || ''}
                         onChange={(e) => handleChange("deadline", e.target.value)}
-                        // defaultValue={selectedTask?.properties.Deadline?.date?.start || ''}
                     />
                 </div>
                 <div className="flex flex-col gap-2 mb-5">
@@ -202,7 +206,6 @@ export default function TaskForm({ properties }) {
                         placeholder="Task description..."
                         value={formData["description"] || ''}
                         onChange={(e) => handleChange("description", e.target.value)}
-                        // defaultValue={selectedTask?.properties.Description?.rich_text[0]?.plain_text || ''}
                     />
                 </div>
                 {/* <div className="flex flex-col gap-2 mb-5">
@@ -227,7 +230,7 @@ export default function TaskForm({ properties }) {
                         dark:bg-blue-600 dark:hover:bg-blue-700
                         disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300
                     "
-                >{selectedTask ? "Edit" : "Create"}
+                >{selectedTask?.id ? "Edit" : "Create"}
                 </button>
             </form>
         </>
