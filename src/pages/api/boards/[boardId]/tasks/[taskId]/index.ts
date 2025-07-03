@@ -18,6 +18,36 @@ export const PATCH = withAuth(async (userId, context) => {
             title: [{ text: { content: updates.name } }],
         };
     }
+    
+    if (updates.status) {
+        properties.Status = {
+            status: { name: updates.status },
+        };
+    }
+    
+    if (updates.priority) {
+        properties.Priority = {
+            select: { name: updates.priority },
+        };
+    }
+
+    if (updates.category) {
+        properties.Category = {
+            select: { name: updates.category },
+        };
+    }
+
+    if (updates.startDate) {
+        properties['Start Date'] = {
+            date: { start: updates.startDate },
+        };
+    }
+
+    if (updates.deadline) {
+        properties.Deadline = {
+            date: { start: updates.deadline },
+        };
+    }
 
     if (updates.description) {
         properties.Description = {
@@ -25,11 +55,6 @@ export const PATCH = withAuth(async (userId, context) => {
         };
     }
 
-    if (updates.dueDate) {
-        properties.DueDate = {
-            date: { start: updates.dueDate },
-        };
-    }
 
     if (Object.keys(properties).length === 0) {
         return new Response(JSON.stringify({ error: 'No valid fields to update' }), { status: 400 });
