@@ -4,35 +4,40 @@ import { UserButton } from "@clerk/astro/components";
 import TaskForm from "@components/TaskForm.tsx";
 import Pomodoro from "@components/Pomodoro.tsx";
 import ProjectSwitcher from "@components/ProjectSwitcher.tsx";
-import TasksList from "@components/TasksList.tsx"
+import TasksList from "@components/TasksList.tsx";
+import Copy from "@assets/Copy.astro";
+import Copied from "@assets/Copied.astro";
 
 const user = await Astro.locals.currentUser();
 if (!user) return new Response("Unauthorized", { status: 401 });
 
 //TODO: edit this
 const boardId = import.meta.env.NOTION_DATABASE_ID;
+const mailTo = import.meta.env.MAIL_TO;
 
-
-const propertiesUrl = new URL(`/api/boards/${boardId}/properties`, Astro.request.url);
+const propertiesUrl = new URL(
+    `/api/boards/${boardId}/properties`,
+    Astro.request.url,
+);
 const boardPropertiesResponse = await fetch(propertiesUrl.toString(), {
-  headers: {
-    'cookie': Astro.request.headers.get('cookie') || '',
-    'authorization': Astro.request.headers.get('authorization') || ''
-  }
+    headers: {
+        cookie: Astro.request.headers.get("cookie") || "",
+        authorization: Astro.request.headers.get("authorization") || "",
+    },
 });
 const boardProperties = await boardPropertiesResponse.json();
-console.log("bp",boardProperties)
 ---
 
 <Layout>
     <main>
-
         <nav
             class="fixed top-0 z-50 w-full bg-white border-b border-midnight-200 dark:bg-midnight-800 dark:border-midnight-700"
         >
             <div class="px-3 py-3 lg:px-5 lg:pl-3">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center justify-start rtl:justify-end">
+                    <div
+                        class="flex items-center justify-start rtl:justify-end"
+                    >
                         <a href="/" class="flex ms-2 md:me-24">
                             <img
                                 src="logo.svg"
@@ -53,12 +58,13 @@ console.log("bp",boardProperties)
                 </div>
             </div>
         </nav>
-    
+
         <aside
             id="logo-sidebar"
-            class="fixed top-0 left-0 z-40 h-screen pt-20 pb-44
-                w-full sm:w-64 
-                border-r 
+            class="
+                fixed top-0 left-0 z-40 h-screen pt-20 pb-44
+                w-full sm:w-64
+                border-r
                 bg-white border-midnight-200
                 dark:bg-midnight-800 dark:border-midnight-700
             "
@@ -69,13 +75,60 @@ console.log("bp",boardProperties)
             >
                 <ProjectSwitcher client:load />
                 <TasksList client:load />
+
+                <div
+                    class="bg-emerald-600 text-white rounded-xl p-4 my-6 shadow flex flex-col items-start"
+                >
+                    <h2 class="text-base font-semibold mb-2">Like what I do?</h2>
+                    <p class="mb-3 text-sm">
+                        If you like my work and would like to collaborate, feel free to reach out!
+                    </p>
+                    <div class="flex gap-2">
+                        <a
+                            href={`mailto:${mailTo}`}
+                            class="
+                                flex items-center justify-center px-4 py-2 text-sm 
+                                rounded-md cursor-pointer text-emerald-700 transition 
+                                bg-white hover:bg-emerald-100
+                                dark:bg-white hover:dark:bg-emerald-100 
+                                disabled:bg-gray-600 disabled:text-gray-500 disabled:hover:bg-gray-600 disabled:cursor-default
+                            "
+                            >Contact Me</a
+                        >
+                        <button
+                            class="group
+                                flex items-center justify-center px-4 py-2 text-sm 
+                                rounded-md cursor-pointer text-emerald-700 transition 
+                                bg-white hover:bg-emerald-100
+                                dark:bg-white hover:dark:bg-emerald-100 
+                                disabled:bg-gray-600 disabled:text-gray-500 disabled:hover:bg-gray-600 disabled:cursor-default
+                            "
+                            type="button"
+                            onclick=`
+                                navigator.clipboard.writeText('${mailTo}');
+                                const btn = this;
+                                const icon = btn.querySelector('.icon-copy');
+                                const copied = btn.querySelector('.icon-copied');
+                                icon.classList.add('hidden');
+                                copied.classList.remove('hidden');
+                                setTimeout(() => {
+                                icon.classList.remove('hidden');
+                                copied.classList.add('hidden');
+                                }, 500); 
+                            `
+                            >
+                                <Copy className="icon-copy size-5" />
+                                <Copied className="size-5 icon-copied hidden" />
+                        </button>
+                    </div>
+                </div>
             </div>
         </aside>
-        <div class="hidden sm:flex sm:flex-col ml-64 mt-14 px-8 w-[calc(100%-16rem)] justify-center pb-48">
+        <div
+            class="hidden sm:flex sm:flex-col ml-64 mt-14 px-8 w-[calc(100%-16rem)] justify-center pb-48"
+        >
             <TaskForm properties={boardProperties} client:load />
         </div>
     </main>
     <Pomodoro client:load />
 </Layout>
-
-
